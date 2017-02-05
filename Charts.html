@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>Prime numbers. Charts</title>
+        <script id="algorithm1" src="trial_division.js" ></script>
+        <script id="algorithm2" src="Eratosthenes.js" ></script>
+        <script id="algorithm3" src="Atkin.js" ></script>
+        <script id="algorithm4" src="Atkin2.js" ></script>
+        <script id="algorithm5" src="Eratosthenes235.js" ></script>
+        <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <input type="checkbox" id="trial_division" checked>Trial division<br>
+        <input type="checkbox" id="eratosthenes" checked>Sieve of Eratosthenes<br>
+        <input type="checkbox" id="eratosthenes235" >Sieve of Eratosthenes. Wheel factorization n = 3<br>
+        <input type="checkbox" id="atkin" >Sieve of Atkin<br>
+        <input type="checkbox" id="atkin2" >Sieve of Atkin (Optimized)<br><br>
+        interval:<input type="number" id="interval" value="100000"><br>
+        bound:<input type="number" id="max" value="1000000"><br>
+        trials:<input type="number" id="repeat" value="1"><br>
+        <input type="button" value="start" onclick="main()">
+        <div id="result"></div>
+        <div id="chart_div">
+            
+        </div>
+
+        <script>
+            google.charts.load('current', {packages: ['corechart']});
+            function main(){
+                var data = [];
+                var algorithms = [];
+                if(document.getElementById("trial_division").checked){
+                    algorithms.push(trial_division);
+                }
+                if(document.getElementById("eratosthenes").checked){
+                    algorithms.push(eratosthenes);
+                }
+                if(document.getElementById("eratosthenes235").checked){
+                    algorithms.push(eratosthenes235);
+                }
+                if(document.getElementById("atkin").checked){
+                    algorithms.push(atkin);
+                }
+                if(document.getElementById("atkin2").checked){
+                    algorithms.push(atkin2);
+                }
+                var interval = document.getElementById("interval").value;
+                var max = document.getElementById("max").value;
+                var repeat = document.getElementById("repeat").value;
+
+                    function measure(i, algorithm){
+                        var trials = [];
+                        for(var j = 1; j <= repeat; j++){
+                            var n = i*interval;
+                            var start = new Date().getTime();
+                            var primes = algorithm(n);
+                            //console.log(primes.length);
+                            var end = new Date().getTime();
+                            var time = end - start;
+                            trials.push(time)
+                        }
+                        var sum = 0;
+                        for(var j = 0; j < trials.length; j++){
+                            sum += trials[j];
+                        }
+                        var result = sum/trials.length
+                        data[i-1].push(result);
+                    }
+
+
+                for(var i = 1; i*interval <= max; i++){
+                    data.push([i*interval])
+                    for(var k = 0; k < algorithms.length; k++){
+                        measure(i, algorithms[k]);
+                    }
+                }
+                //document.getElementById("result").innerHTML = data;
+                drawChart()
+                function drawChart(){
+                    var chartData = new google.visualization.DataTable();
+                    chartData.addColumn('number', 'limit');
+                    for(var i = 0; i < algorithms.length; i++){
+                            var name = algorithms[i].name;
+                            chartData.addColumn('number', name);
+                    }
+                    chartData.addRows(data);
+                    var options = {
+                        hAxis : {title: "Limit"},
+                        vAxis : {title: "Time (ms)"},
+                        width : 800,
+                        height : 400
+                    }
+                    var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+                    chart.draw(chartData, options);
+                }
+            }
+        </script>
+    </body>
+</html>

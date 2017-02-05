@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+	<title>Prime numbers</title>
+    <script id="algorithm1" src="trial_division.js" ></script>
+    <script id="algorithm2" src="Eratosthenes.js" ></script>
+    <script id="algorithm3" src="Atkin.js" ></script>
+    <script id="algorithm4" src="Atkin2.js" ></script>
+    <script id="algorithm5" src="Eratosthenes235.js" ></script>
+</head>
+<body>
+    <div style="padding:20px 0px">
+        <input type="radio" id="trial_division" name="algorithm" checked >Trial division<br>
+        <input type="radio" id="eratosthenes" name="algorithm" >Sieve of Eratosthenes<br>
+        <input type="radio" id="eratosthenes235" name="algorithm" >Sieve of Eratosthenes. Wheel factorization n = 3<br>
+        <input type="radio" id="atkin" name="algorithm" >Sieve of Atkin<br>
+        <input type="radio" id="atkin2" name="algorithm" >Sieve of Atkin (Optimized)<br>
+    </div>
+    <div style="padding:20px 0px">
+        Limit: <input type="number" id="n" value="1000000" >
+        <input type="button" value="Start" onclick="calculate()" ></br>
+        Trials: <input type="number" id="t" value="5" ><br>
+        <input type="checkbox" id="checkbox" >show numbers<br>
+    </div>
+	<div id="time" ></div></br>
+	<div id="length" ></div></br>
+	<div id="result" style="width:500px"></div>
+	
+	
+
+	<script>
+        function calculate(){
+            var algorithm;
+            if(document.getElementById("trial_division").checked){
+                algorithm = trial_division;
+            } else if(document.getElementById("eratosthenes").checked){
+                algorithm = eratosthenes;
+            } else if(document.getElementById("eratosthenes235").checked){
+                algorithm = eratosthenes235;
+            } else if(document.getElementById("atkin").checked){
+                algorithm = atkin;
+            }  else if(document.getElementById("atkin2").checked){
+                algorithm = atkin2;
+            }
+            var n = document.getElementById("n").value;
+            var t = document.getElementById("t").value;
+            var results = [];
+            var primes;
+            for(var i = 0; i < t; i++ ){
+                var start = new Date().getTime();
+                primes = algorithm(n);
+                var end = new Date().getTime();
+                var time = end - start;
+                results.push(time);
+            }
+            document.getElementById("length").innerHTML = "Total found: " + primes.length
+            var output = document.getElementById("time");
+            output.innerHTML = "";
+            for(var i = 0; i < t; i++ ){
+                output.innerHTML += i + 1 + ": " + results[i] + " ms<br>";
+            }
+            if( document.getElementById("checkbox").checked ){ document.getElementById("result").innerHTML = primes.join(", ") }
+        }
+	</script>
+	
+</body>
+</html>
